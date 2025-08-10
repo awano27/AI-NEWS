@@ -24,6 +24,8 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}  # ここに 'gemini-2.5-pro' を設定して渡す
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          FAST_MODE: '1'   # ← 本文抽出をスキップ
+          SKIP_X: '1'      # ← X(Nitter含む) を一旦スキップ
         run: python scripts/build_news.py
       - name: Commit & push
         run: |
