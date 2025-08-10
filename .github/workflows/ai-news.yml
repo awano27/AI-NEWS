@@ -24,6 +24,11 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}  # ここに 'gemini-2.5-pro' を設定して渡す
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+            # ここから下が安定化用（スクリプトが読んで制御します）
+　　　　　  SNS_MAX_SEC: '60'      # SNS取得の総持ち時間（秒）。超えたら自動スキップして続行
+  　　　　　HEAD_TIMEOUT: '4'      # リンク生存確認のHEADタイムアウト（秒）
+  　　　　　GET_TIMEOUT:  '6'      # フォールバックGETのタイムアウト（秒）
+  　　　　　MAX_FEED_ITEMS: '8'    # 1フィードの取得上限（詰まり防止）
         run: python scripts/build_news.py
       - name: Commit & push
         run: |
