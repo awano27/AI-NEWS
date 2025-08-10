@@ -1,0 +1,21 @@
+{
+  "generated_at": "2025-08-10T09:00:00+09:00",
+  "highlight": {
+    "category": "セットアップ",
+    "stars": 5,
+    "title": "自動更新を有効化しました",
+    "summary": "Actions が毎朝JSTに最新ニュースJSONを生成します。",
+    "sources": [
+      {
+        "name": "your repo",
+        "url": "#"
+      }
+    ]
+  },
+  "sections": {
+    "business": [],
+    "tools": [],
+    "company": [],
+    "sns": []
+  }
+}

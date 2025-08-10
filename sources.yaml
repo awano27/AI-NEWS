@@ -1,0 +1,32 @@
+feeds:
+  - https://openai.com/blog/rss.xml
+  - https://www.anthropic.com/news/rss.xml
+  - https://deepmind.google/atom.xml
+  - https://ai.googleblog.com/atom.xml
+  - https://engineering.fb.com/feed/
+  - https://huggingface.co/blog/feed.xml
+  - https://www.nvidia.com/en-us/research/feeds/rss/
+  - https://techcommunity.microsoft.com/t5/ai-azure-ai-blog/bg-p/AzureAIBlog/rss-board
+  - https://mistral.ai/news/index.xml
+  - https://stability.ai/feed
+  - https://www.theverge.com/rss/ai-artificial-intelligence/index.xml
+  - https://techcrunch.com/category/artificial-intelligence/feed/
+  - https://www.reuters.com/technology/artificial-intelligence/rss
+
+x_accounts:
+  - OpenAI
+  - anthropic
+  - googledeepmind
+  - _anthropic
+  - OpenAIResearch
+  - karpathy
+  - nvidiaai
+  - microsoft
+  - googlecloud
+
+x_rss_base: https://nitter.net
+x_rss_accounts:
+  - OpenAI
+  - anthropic
+  - googledeepmind
+  - karpathy
