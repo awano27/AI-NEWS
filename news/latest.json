@@ -3,7 +3,7 @@
   "highlight": {
     "category": "セットアップ",
     "stars": 5,
-    "title": "自動更新を有効化しました",
+    "title": "自動更新を有効化しました（Gemini要約）",
     "summary": "Actions が毎朝JSTに最新ニュースJSONを生成します。",
     "sources": [
       {

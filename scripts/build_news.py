@@ -1,4 +1,4 @@
-import os, re, json, time, math, hashlib, html
+import os, re, json
 from datetime import datetime, timezone, timedelta
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
@@ -14,8 +14,7 @@ ROOT = os.path.dirname(os.path.dirname(__file__))
 NEWS_DIR = os.path.join(ROOT, 'news')
 SOURCES_YAML = os.path.join(ROOT, 'sources.yaml')
 
-def log(*a):
-    print('[build]', *a, flush=True)
+def log(*a): print('[build]', *a, flush=True)
 
 def canon_url(u: str) -> str:
     try:
@@ -23,16 +22,13 @@ def canon_url(u: str) -> str:
         q = [(k,v) for k,v in parse_qsl(p.query) if not k.lower().startswith('utm_')]
         p = p._replace(query=urlencode(q), fragment='')
         s = urlunparse(p)
-        if s.endswith('/'):
-            s = s[:-1]
-        return s
+        return s[:-1] if s.endswith('/') else s
     except Exception:
         return u
 
 SIM_THRESHOLD = 0.9
 from difflib import SequenceMatcher
-def very_similar(a,b):
-    return SequenceMatcher(None, a.lower(), b.lower()).ratio() >= SIM_THRESHOLD
+def very_similar(a,b): return SequenceMatcher(None, a.lower(), b.lower()).ratio() >= SIM_THRESHOLD
 
 UA = {'User-Agent': 'Mozilla/5.0 (NewsBot; +https://github.com)'}
 
@@ -58,19 +54,14 @@ def fetch_feed(url: str):
     for e in d.entries:
         title = e.get('title', '').strip()
         link = e.get('link') or e.get('id')
-        if not title or not link:
-            continue
+        if not title or not link: continue
         link = canon_url(link)
         dt = None
         for key in ['published', 'updated', 'created']:
             if e.get(key):
-                try:
-                    dt = dateparser.parse(e.get(key))
-                    break
-                except Exception:
-                    pass
-        if not dt:
-            dt = datetime.now(timezone.utc)
+                try: dt = dateparser.parse(e.get(key)); break
+                except Exception: pass
+        if not dt: dt = datetime.now(timezone.utc)
         summary = BeautifulSoup(e.get('summary', ''), 'html.parser').get_text(' ', strip=True)
         items.append({
             'title': title,
@@ -83,8 +74,7 @@ def fetch_feed(url: str):
 
 def fetch_x_api(usernames):
     token = os.getenv('X_BEARER_TOKEN')
-    if not token or not usernames:
-        return []
+    if not token or not usernames: return []
     log('x api: users', usernames)
     headers = {'Authorization': f'Bearer {token}', 'User-Agent': UA['User-Agent']}
     out = []
@@ -92,8 +82,7 @@ def fetch_x_api(usernames):
         try:
             u = requests.get(f'https://api.x.com/2/users/by/username/{name}', headers=headers, timeout=10).json()
             uid = u.get('data',{}).get('id')
-            if not uid:
-                continue
+            if not uid: continue
             t = requests.get(f'https://api.x.com/2/users/{uid}/tweets', params={'max_results': 10, 'tweet.fields': 'created_at'}, headers=headers, timeout=10).json()
             for tw in t.get('data', []):
                 url = f'https://x.com/{name}/status/{tw.get("id")}'
@@ -109,8 +98,7 @@ def fetch_x_api(usernames):
     return out
 
 def fetch_x_rss(base, accounts):
-    if not base or not accounts:
-        return []
+    if not base or not accounts: return []
     out = []
     for name in accounts:
         url = f"{base.rstrip('/')}/{name}/rss"
@@ -119,19 +107,16 @@ def fetch_x_rss(base, accounts):
                 e['url'] = re.sub(r'^https?://[^/]+/([^/]+)/status/(\d+).*', r'https://x.com/\1/status/\2', e['url'])
                 e['source_name'] = 'x.com'
                 out.append(e)
-        except Exception as ex:
-            log('x rss error', name, ex)
+        except Exception as ex: log('x rss error', name, ex)
     return out
 
 def extract_text(url: str) -> str:
     try:
         downloaded = trafilatura.fetch_url(url)
-        if not downloaded:
-            return ''
+        if not downloaded: return ''
         txt = trafilatura.extract(downloaded, include_comments=False, include_images=False, include_tables=False) or ''
         return txt.strip()
-    except Exception:
-        return ''
+    except Exception: return ''
 
 KEYWORDS_ENGINEER = r"\b(API|SDK|CLI|ライブラリ|GitHub|オープンソース|weights|モデル|fine-tune|benchmark|データセット|リリース|v\d(?:\.\d)?)\b"
 KEYWORDS_BIZ = r"\b(Copilot|Notion|Slack|Google\s?Workspace|Microsoft\s?365|Salesforce|HubSpot|自動化|ワークフロー|生産性|アシスタント)\b"
@@ -143,24 +128,18 @@ def classify(item):
     s = (item.get('summary') or '')
     text = f"{title} {s}"
     cat = []
-    if re.search(KEYWORDS_ENGINEER, text, re.I):
-        cat.append('tools')
-    if re.search(KEYWORDS_BIZ, text, re.I):
-        cat.append('business')
-    if any(n.lower() in text.lower() for n in BIG_NAMES) or re.search(KEYWORDS_POLICY, text, re.I):
-        cat.append('company')
-    if 'x.com' in (item.get('source_name') or '') or 'twitter' in (item.get('source_name') or ''):
-        cat.append('sns')
-    if not cat:
-        cat = ['company']
+    import re as _re
+    if _re.search(KEYWORDS_ENGINEER, text, _re.I): cat.append('tools')
+    if _re.search(KEYWORDS_BIZ, text, _re.I): cat.append('business')
+    if any(n.lower() in text.lower() for n in BIG_NAMES) or _re.search(KEYWORDS_POLICY, text, _re.I): cat.append('company')
+    if 'x.com' in (item.get('source_name') or '') or 'twitter' in (item.get('source_name') or ''): cat.append('sns')
+    if not cat: cat = ['company']
     return cat
 
 def score(item):
     now = datetime.now(JST)
-    try:
-        dt = dateparser.parse(item.get('published')).astimezone(JST)
-    except Exception:
-        dt = now
+    try: dt = dateparser.parse(item.get('published')).astimezone(JST)
+    except Exception: dt = now
     age_h = (now - dt).total_seconds()/3600
     recency = max(0.0, 1.0 - min(age_h/48.0, 1.0))
     t = (item.get('title') or '') + ' ' + (item.get('summary') or '')
@@ -175,38 +154,71 @@ def score(item):
     return base, min(max(stars,1),5)
 
 def llm_summarize(title, text, url):
-    key = os.getenv('OPENAI_API_KEY')
-    if not key:
-        return None
-    model = os.getenv('OPENAI_MODEL') or 'gpt-4o-mini'
-    base = os.getenv('OPENAI_API_BASE') or 'https://api.openai.com/v1'
-    try:
-        prompt = f'''以下の記事を日本語で80文字以内に要約し、カテゴリ（business/tools/company/snsのいずれか）と、重要度を1〜5で出してください。出力はJSONのみ。
+    """Use Gemini if available, otherwise OpenAI. Return dict or None."""
+    prompt = f"""以下の記事を日本語で80文字以内に要約し、カテゴリ（business/tools/company/sns のいずれか）と重要度(1〜5)を出してください。
+出力はJSONのみ。キーは summary, category, stars。
+タイトル: {title}
+URL: {url}
+本文: {text[:4000]}
+"""
 
-        タイトル: {title}
-        URL: {url}
-        本文: {text[:4000]}
-        '''
-        payload = {
-            'model': model,
-            'messages': [
-                {'role': 'system', 'content': 'You are a concise Japanese news assistant.'},
-                {'role': 'user', 'content': prompt}
-            ],
-            'temperature': 0.2
-        }
-        r = requests.post(f'{base}/chat/completions', headers={'Authorization': f'Bearer {key}'}, json=payload, timeout=45)
-        r.raise_for_status()
-        ans = r.json()['choices'][0]['message']['content']
-        j = json.loads(ans)
-        return {
-            'blurb': j.get('summary') or j.get('要約') or j.get('blurb'),
-            'category': j.get('category') or j.get('カテゴリ'),
-            'stars': int(j.get('stars') or j.get('重要度') or 3)
-        }
-    except Exception as ex:
-        log('llm fail', ex)
-        return None
+    # Gemini
+    gkey = os.getenv("GEMINI_API_KEY")
+    if gkey:
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=gkey)
+            model_name = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+            model = genai.GenerativeModel(model_name=model_name)
+            resp = model.generate_content(
+                prompt,
+                generation_config={"temperature": 0.2, "response_mime_type": "application/json"}
+            )
+            content = (getattr(resp, "text", None) or "").strip()
+            try:
+                j = json.loads(content)
+            except Exception:
+                import re as _re
+                m = _re.search(r"\{.*\}", content, re.S)
+                j = json.loads(m.group(0)) if m else {}
+            if j:
+                return {
+                    "blurb": j.get("summary") or j.get("要約") or j.get("blurb"),
+                    "category": j.get("category") or j.get("カテゴリ"),
+                    "stars": int(j.get("stars") or j.get("重要度") or 3),
+                }
+        except Exception as ex:
+            log("gemini fail", ex)
+
+    # OpenAI fallback
+    okey = os.getenv("OPENAI_API_KEY")
+    if okey:
+        try:
+            base = os.getenv("OPENAI_API_BASE") or "https://api.openai.com/v1"
+            model = os.getenv("OPENAI_MODEL") or "gpt-4o-mini"
+            payload = {
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": "You are a concise Japanese news assistant."},
+                    {"role": "user", "content": prompt},
+                ],
+                "temperature": 0.2,
+            }
+            r = requests.post(f"{base}/chat/completions",
+                              headers={"Authorization": f"Bearer {okey}"},
+                              json=payload, timeout=45)
+            r.raise_for_status()
+            ans = r.json()["choices"][0]["message"]["content"]
+            j = json.loads(ans)
+            return {
+                "blurb": j.get("summary") or j.get("要約") or j.get("blurb"),
+                "category": j.get("category") or j.get("カテゴリ"),
+                "stars": int(j.get("stars") or j.get("重要度") or 3),
+            }
+        except Exception as ex:
+            log("openai fail", ex)
+
+    return None
 
 def main():
     os.makedirs(NEWS_DIR, exist_ok=True)
@@ -214,28 +226,22 @@ def main():
 
     items = []
     for f in feeds:
-        try:
-            items.extend(fetch_feed(f))
-        except Exception as ex:
-            log('feed err', f, ex)
+        try: items.extend(fetch_feed(f))
+        except Exception as ex: log('feed err', f, ex)
 
     items.extend(fetch_x_api(x_users))
     items.extend(fetch_x_rss(x_rss_base, x_rss_users))
 
-    uniq = []
-    seen = set()
+    uniq, seen = [], set()
     for it in items:
         url = canon_url(it['url'])
         key = (url, it['title'].strip().lower())
-        if key in seen:
-            continue
-        seen.add(key)
-        uniq.append(it)
+        if key in seen: continue
+        seen.add(key); uniq.append(it)
 
     pruned = []
     for it in uniq:
-        if any(very_similar(it['title'], p['title']) for p in pruned):
-            continue
+        if any(very_similar(it['title'], p['title']) for p in pruned): continue
         pruned.append(it)
 
     verified = [it for it in pruned if head_ok(it['url'])]
@@ -245,7 +251,7 @@ def main():
         body = extract_text(it['url'])
         llm = llm_summarize(it['title'], body or it['summary'], it['url'])
         cats = classify(it)
-        base, stars = score(it)
+        _, stars = score(it)
         enriched.append({
             'title': it['title'],
             'blurb': (llm and llm.get('blurb')) or (body[:120] + '…' if body else it['summary'][:120]),
@@ -256,19 +262,16 @@ def main():
         })
 
     for it in enriched:
-        base, stars = score({'title': it['title'], 'summary': it['blurb'], 'published': it['date'], 'source_name': it['source']['name']})
-        it['stars'] = max(it['stars'], stars)
+        _, s2 = score({'title': it['title'], 'summary': it['blurb'], 'published': it['date'], 'source_name': it['source']['name']})
+        it['stars'] = max(it['stars'], s2)
 
     sections = {'business': [], 'tools': [], 'company': [], 'sns': []}
     for it in enriched:
         sections.setdefault(it['category'], sections['company']).append(it)
 
-    from dateutil import parser as _dp
     def sortkey(x):
-        try:
-            dt = _dp.parse(x['date'])
-        except Exception:
-            dt = datetime.now(JST)
+        try: dt = dateparser.parse(x['date'])
+        except Exception: dt = datetime.now(JST)
         return (-x['stars'], dt)
 
     for k in sections:
@@ -278,19 +281,9 @@ def main():
     hl = all_items[0] if all_items else None
     highlight = None
     if hl:
-        highlight = {
-            'category': '重要トピック',
-            'stars': hl['stars'],
-            'title': hl['title'],
-            'summary': hl['blurb'],
-            'sources': [hl['source']]
-        }
+        highlight = {"category": "重要トピック", "stars": hl['stars'], "title": hl['title'], "summary": hl['blurb'], "sources": [hl['source']]}
 
-    out = {
-        'generated_at': datetime.now(JST).isoformat(),
-        'highlight': highlight,
-        'sections': sections
-    }
+    out = {"generated_at": datetime.now(JST).isoformat(), "highlight": highlight, "sections": sections}
 
     today = datetime.now(JST).strftime('%Y-%m-%d')
     with open(os.path.join(NEWS_DIR, 'latest.json'), 'w', encoding='utf-8') as f:
