@@ -20,14 +20,16 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
       - name: Build news JSON
+      - name: Build news JSON
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          GEMINI_MODEL:   ${{ vars.GEMINI_MODEL }}
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
-          FAST_MODE: '1'
-          MAX_FEED_ITEMS: '8'
-          HEAD_TIMEOUT: '4'
-          GET_TIMEOUT: '6'
+          FAST_MODE: '1'        # 本文抽出をスキップ → 爆速
+          SKIP_X: '1'           # SNSはいったんオフ（まず完走確認）
+          MAX_FEED_ITEMS: '6'   # 1フィード6件まで
+          HEAD_TIMEOUT: '4'     # HEAD 4秒
+          GET_TIMEOUT:  '6'     # GET 6秒
         run: python scripts/build_news.py
       - name: Commit & push
         run: |
