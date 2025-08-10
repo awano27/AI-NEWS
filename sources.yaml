@@ -24,9 +24,10 @@ x_accounts:
   - microsoft
   - googlecloud
 
-x_rss_base: https://nitter.net
-x_rss_accounts:
-  - OpenAI
-  - anthropic
-  - googledeepmind
-  - karpathy
+# ↓ Nitterは使わない（無効化）
+# x_rss_base: https://nitter.net
+# x_rss_accounts:
+#   - OpenAI
+#   - anthropic
+#   - googledeepmind
+#   - karpathy
