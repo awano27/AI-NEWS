@@ -5,7 +5,11 @@
     return r.json();
   };
   const data = await fetchJSON('news/latest.json').catch(() => null);
-  if (!data) return;
+  if (!data) {
+    const c = document.querySelector('.container');
+    if (c) c.innerHTML = '<p class="error-message">ニュースを取得できませんでした</p>';
+    return;
+  }
 
   const starStr = n => '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n);
   const esc = (s) => (s || '').replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\\':'\\'}[c]));
