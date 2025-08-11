@@ -1,10 +1,10 @@
 {
-  "generated_at": "2025-08-11T11:06:21.087671+09:00",
+  "generated_at": "2025-08-11T11:52:21.275748+09:00",
   "highlight": {
     "category": "重要トピック",
     "stars": 5,
     "title": "Sex is getting scrubbed from the internet, but a billionaire can sell you AI nudes",
-    "summary": "ネット検閲が強化される一方、イーロン・マスクのxAIはディープフェイク画像を生成可能に。大手によるダブルスタンダードと同意なきAIポルノの危険性を指摘する。",
+    "summary": "ネットで性表現の検閲が進む一方、マスク氏のxAIはAI画像生成機能を提供。同意なきディープフェイク等の問題が懸念されている。",
     "sources": [
       {
         "name": "theverge.com",
@@ -17,22 +17,21 @@
     "tools": [
       {
         "title": "We found stuff AI is pretty good at",
-        "blurb": "AIは万能と言われるが具体的な活用法は不明瞭。この記事では、ChatGPTなどのAIツールが実際に得意とする便利な使い方を紹介する。",
+        "blurb": "テック企業が喧伝するAIだが、具体的な活用法は分かりにくい。この記事では、実際に役立つAIツールの使い方や得意な作業を検証し紹介している。",
         "category": "tools",
         "date": "2025-08-11",
-        "stars": 4,
+        "stars": 3,
         "source": {
           "name": "theverge.com",
           "url": "https://www.theverge.com/podcast/756701/ai-tools-chatgpt-gemini-vergecast"
         }
       }
     ],
-    "company": [],
-    "sns": [
+    "company": [
       {
         "title": "Sex is getting scrubbed from the internet, but a billionaire can sell you AI nudes",
-        "blurb": "ネット検閲が強化される一方、イーロン・マスクのxAIはディープフェイク画像を生成可能に。大手によるダブルスタンダードと同意なきAIポルノの危険性を指摘する。",
-        "category": "sns",
+        "blurb": "ネットで性表現の検閲が進む一方、マスク氏のxAIはAI画像生成機能を提供。同意なきディープフェイク等の問題が懸念されている。",
+        "category": "company",
         "date": "2025-08-10",
         "stars": 5,
         "source": {
@@ -40,6 +39,7 @@
           "url": "https://www.theverge.com/internet-censorship/756831/grok-spicy-videos-nonconsensual-deepfakes-online-safety"
         }
       }
-    ]
+    ],
+    "sns": []
   }
 }
