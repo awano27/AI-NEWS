@@ -14,6 +14,13 @@ ROOT = os.path.dirname(os.path.dirname(__file__))
 NEWS_DIR = os.path.join(ROOT, 'news')
 SOURCES_YAML = os.path.join(ROOT, 'sources.yaml')
 
+# runtime toggles for faster builds
+FAST = os.getenv('FAST_MODE', '0') == '1'
+SKIP_X = os.getenv('SKIP_X', '0') == '1'
+MAX_FEED_ITEMS = int(os.getenv('MAX_FEED_ITEMS', '6'))
+HEAD_TIMEOUT = float(os.getenv('HEAD_TIMEOUT', '4'))
+GET_TIMEOUT  = float(os.getenv('GET_TIMEOUT',  '6'))
+
 def log(*a): print('[build]', *a, flush=True)
 
 def canon_url(u: str) -> str:
@@ -40,9 +47,9 @@ def load_sources():
 
 def head_ok(url: str) -> bool:
     try:
-        r = requests.head(url, headers=UA, timeout=8, allow_redirects=True)
+        r = requests.head(url, headers=UA, timeout=HEAD_TIMEOUT, allow_redirects=True)
         if r.status_code >= 400:
-            r = requests.get(url, headers=UA, timeout=10, allow_redirects=True)
+            r = requests.get(url, headers=UA, timeout=GET_TIMEOUT, allow_redirects=True)
         return 200 <= r.status_code < 400
     except Exception:
         return False
@@ -51,7 +58,7 @@ def fetch_feed(url: str):
     log('feed:', url)
     d = feedparser.parse(url)
     items = []
-    for e in d.entries:
+    for e in d.entries[:MAX_FEED_ITEMS]:
         title = e.get('title', '').strip()
         link = e.get('link') or e.get('id')
         if not title or not link: continue
@@ -111,12 +118,16 @@ def fetch_x_rss(base, accounts):
     return out
 
 def extract_text(url: str) -> str:
+    if FAST:
+        return ''  # skip full-text extraction in fast mode
     try:
         downloaded = trafilatura.fetch_url(url)
-        if not downloaded: return ''
+        if not downloaded:
+            return ''
         txt = trafilatura.extract(downloaded, include_comments=False, include_images=False, include_tables=False) or ''
         return txt.strip()
-    except Exception: return ''
+    except Exception:
+        return ''
 
 KEYWORDS_ENGINEER = r"\b(API|SDK|CLI|ライブラリ|GitHub|オープンソース|weights|モデル|fine-tune|benchmark|データセット|リリース|v\d(?:\.\d)?)\b"
 KEYWORDS_BIZ = r"\b(Copilot|Notion|Slack|Google\s?Workspace|Microsoft\s?365|Salesforce|HubSpot|自動化|ワークフロー|生産性|アシスタント)\b"
@@ -229,8 +240,9 @@ def main():
         try: items.extend(fetch_feed(f))
         except Exception as ex: log('feed err', f, ex)
 
-    items.extend(fetch_x_api(x_users))
-    items.extend(fetch_x_rss(x_rss_base, x_rss_users))
+    if not SKIP_X:
+        items.extend(fetch_x_api(x_users))
+        items.extend(fetch_x_rss(x_rss_base, x_rss_users))
 
     uniq, seen = [], set()
     for it in items:
@@ -246,8 +258,18 @@ def main():
 
     verified = [it for it in pruned if head_ok(it['url'])]
 
-    enriched = []
+    cutoff = datetime.now(JST) - timedelta(hours=24)
+    recent = []
     for it in verified:
+        try:
+            dt = dateparser.parse(it['published']).astimezone(JST)
+        except Exception:
+            dt = datetime.now(JST)
+        if dt >= cutoff:
+            recent.append(it)
+
+    enriched = []
+    for it in recent:
         body = extract_text(it['url'])
         llm = llm_summarize(it['title'], body or it['summary'], it['url'])
         cats = classify(it)
