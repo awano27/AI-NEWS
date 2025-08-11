@@ -39,6 +39,46 @@ def very_similar(a,b): return SequenceMatcher(None, a.lower(), b.lower()).ratio(
 
 UA = {'User-Agent': 'Mozilla/5.0 (NewsBot; +https://github.com)'}
 
+#
+# Networking helpers -------------------------------------------------------
+#
+# In some environments a corporate or CI proxy may be configured via
+# environment variables.  Those proxies can respond with ``403`` errors or
+# otherwise block access which makes the news build fail without a clear
+# reason.  We try the request once using the default environment and on
+# ``ProxyError`` retry without any proxy settings.  This mirrors the common
+# ``curl --noproxy"`` behaviour and makes the script usable in restricted
+# networks too.
+
+_sess_default = requests.Session()
+_sess_default.headers.update(UA)
+_sess_noproxy = requests.Session()
+_sess_noproxy.headers.update(UA)
+_sess_noproxy.trust_env = False  # ignore system proxy settings
+
+def _req(method, url, **kw):
+    try:
+        return _sess_default.request(method, url, **kw)
+    except requests.exceptions.ProxyError:
+        return _sess_noproxy.request(method, url, **kw)
+
+def http_get(url, **kw):
+    return _req('GET', url, **kw)
+
+def http_head(url, **kw):
+    return _req('HEAD', url, **kw)
+
+def http_post(url, **kw):
+    return _req('POST', url, **kw)
+
+def network_available(test_url: str = 'https://example.com') -> bool:
+    """Return True if we can reach the internet."""
+    try:
+        http_head(test_url, timeout=HEAD_TIMEOUT)
+        return True
+    except Exception:
+        return False
+
 def load_sources():
     import yaml
     with open(SOURCES_YAML, 'r', encoding='utf-8') as f:
@@ -47,9 +87,9 @@ def load_sources():
 
 def head_ok(url: str) -> bool:
     try:
-        r = requests.head(url, headers=UA, timeout=HEAD_TIMEOUT, allow_redirects=True)
+        r = http_head(url, timeout=HEAD_TIMEOUT, allow_redirects=True)
         if r.status_code >= 400:
-            r = requests.get(url, headers=UA, timeout=GET_TIMEOUT, allow_redirects=True)
+            r = http_get(url, timeout=GET_TIMEOUT, allow_redirects=True)
         return 200 <= r.status_code < 400
     except Exception:
         return False
@@ -57,7 +97,7 @@ def head_ok(url: str) -> bool:
 def fetch_feed(url: str):
     log('feed:', url)
     try:
-        r = requests.get(url, headers=UA, timeout=GET_TIMEOUT)
+        r = http_get(url, timeout=GET_TIMEOUT)
         d = feedparser.parse(r.content)
     except Exception as ex:
         log('feed err', url, ex)
@@ -92,10 +132,10 @@ def fetch_x_api(usernames):
     out = []
     for name in usernames:
         try:
-            u = requests.get(f'https://api.x.com/2/users/by/username/{name}', headers=headers, timeout=10).json()
+            u = http_get(f'https://api.x.com/2/users/by/username/{name}', headers=headers, timeout=10).json()
             uid = u.get('data',{}).get('id')
             if not uid: continue
-            t = requests.get(f'https://api.x.com/2/users/{uid}/tweets', params={'max_results': 10, 'tweet.fields': 'created_at'}, headers=headers, timeout=10).json()
+            t = http_get(f'https://api.x.com/2/users/{uid}/tweets', params={'max_results': 10, 'tweet.fields': 'created_at'}, headers=headers, timeout=10).json()
             for tw in t.get('data', []):
                 url = f'https://x.com/{name}/status/{tw.get("id")}'
                 out.append({
@@ -220,9 +260,9 @@ URL: {url}
                 ],
                 "temperature": 0.2,
             }
-            r = requests.post(f"{base}/chat/completions",
-                              headers={"Authorization": f"Bearer {okey}"},
-                              json=payload, timeout=45)
+            r = http_post(f"{base}/chat/completions",
+                          headers={"Authorization": f"Bearer {okey}"},
+                          json=payload, timeout=45)
             r.raise_for_status()
             ans = r.json()["choices"][0]["message"]["content"]
             j = json.loads(ans)
@@ -241,13 +281,18 @@ def main():
     feeds, x_users, x_rss_base, x_rss_users = load_sources()
 
     items = []
-    for f in feeds:
-        try: items.extend(fetch_feed(f))
-        except Exception as ex: log('feed err', f, ex)
+    if network_available():
+        for f in feeds:
+            try:
+                items.extend(fetch_feed(f))
+            except Exception as ex:
+                log('feed err', f, ex)
 
-    if not SKIP_X:
-        items.extend(fetch_x_api(x_users))
-        items.extend(fetch_x_rss(x_rss_base, x_rss_users))
+        if not SKIP_X:
+            items.extend(fetch_x_api(x_users))
+            items.extend(fetch_x_rss(x_rss_base, x_rss_users))
+    else:
+        log('network unreachable; skipping fetches')
 
     uniq, seen = [], set()
     for it in items:
