@@ -47,9 +47,12 @@
     list.innerHTML = items.map(renderCard).join('');
   });
 
-  const f = document.querySelector('footer p');
-  if (f && data.generated_at) {
+  const f = document.querySelector('footer .updated-footer');
+  const u = document.querySelector('.updated');
+  if (data.generated_at) {
     const ts = new Date(data.generated_at);
-    f.textContent = `更新：${ts.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })} JST`;
+    const text = `最終更新：${ts.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })} JST`;
+    if (f) f.textContent = text;
+    if (u) u.textContent = text;
   }
 })();
