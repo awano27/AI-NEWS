@@ -14,6 +14,14 @@ ROOT = os.path.dirname(os.path.dirname(__file__))
 NEWS_DIR = os.path.join(ROOT, 'news')
 SOURCES_YAML = os.path.join(ROOT, 'sources.yaml')
 
+# runtime toggles for faster builds
+FAST = os.getenv('FAST_MODE', '0') == '1'
+SKIP_X = os.getenv('SKIP_X', '0') == '1'
+MAX_FEED_ITEMS = int(os.getenv('MAX_FEED_ITEMS', '6'))
+HEAD_TIMEOUT = float(os.getenv('HEAD_TIMEOUT', '4'))
+GET_TIMEOUT  = float(os.getenv('GET_TIMEOUT',  '6'))
+SNS_SHEET_URL = os.getenv('SNS_SHEET_URL', 'https://docs.google.com/spreadsheets/d/1uuLKCLIJw--a1vCcO6UGxSpBiLTtN8uGl2cdMb6wcfg/export?format=csv&gid=0')
+
 def log(*a): print('[build]', *a, flush=True)
 
 def canon_url(u: str) -> str:
@@ -40,9 +48,9 @@ def load_sources():
 
 def head_ok(url: str) -> bool:
     try:
-        r = requests.head(url, headers=UA, timeout=8, allow_redirects=True)
+        r = requests.head(url, headers=UA, timeout=HEAD_TIMEOUT, allow_redirects=True)
         if r.status_code >= 400:
-            r = requests.get(url, headers=UA, timeout=10, allow_redirects=True)
+            r = requests.get(url, headers=UA, timeout=GET_TIMEOUT, allow_redirects=True)
         return 200 <= r.status_code < 400
     except Exception:
         return False
@@ -51,7 +59,7 @@ def fetch_feed(url: str):
     log('feed:', url)
     d = feedparser.parse(url)
     items = []
-    for e in d.entries:
+    for e in d.entries[:MAX_FEED_ITEMS]:
         title = e.get('title', '').strip()
         link = e.get('link') or e.get('id')
         if not title or not link: continue
@@ -110,13 +118,50 @@ def fetch_x_rss(base, accounts):
         except Exception as ex: log('x rss error', name, ex)
     return out
 
+def fetch_x_sheet(sheet_url: str):
+    if not sheet_url:
+        return []
+    log('x sheet:', sheet_url)
+    try:
+        r = requests.get(sheet_url, headers=UA, timeout=10)
+        r.raise_for_status()
+        import csv, io
+        out = []
+        reader = csv.DictReader(io.StringIO(r.text))
+        for row in reader:
+            url = row.get('url') or row.get('URL') or row.get('リンク')
+            if not url:
+                continue
+            title = row.get('title') or row.get('text') or row.get('内容') or ''
+            summary = row.get('summary') or row.get('text') or row.get('内容') or ''
+            dt_str = row.get('published') or row.get('date') or row.get('日時') or ''
+            try:
+                dt = dateparser.parse(dt_str).astimezone(JST) if dt_str else datetime.now(JST)
+            except Exception:
+                dt = datetime.now(JST)
+            out.append({
+                'title': (title or summary)[:90],
+                'url': url,
+                'summary': summary,
+                'published': dt.isoformat(),
+                'source_name': row.get('source') or row.get('source_name') or 'x.com',
+            })
+        return out
+    except Exception as ex:
+        log('x sheet error', ex)
+        return []
+
 def extract_text(url: str) -> str:
+    if FAST:
+        return ''  # skip full-text extraction in fast mode
     try:
         downloaded = trafilatura.fetch_url(url)
-        if not downloaded: return ''
+        if not downloaded:
+            return ''
         txt = trafilatura.extract(downloaded, include_comments=False, include_images=False, include_tables=False) or ''
         return txt.strip()
-    except Exception: return ''
+    except Exception:
+        return ''
 
 KEYWORDS_ENGINEER = r"\b(API|SDK|CLI|ライブラリ|GitHub|オープンソース|weights|モデル|fine-tune|benchmark|データセット|リリース|v\d(?:\.\d)?)\b"
 KEYWORDS_BIZ = r"\b(Copilot|Notion|Slack|Google\s?Workspace|Microsoft\s?365|Salesforce|HubSpot|自動化|ワークフロー|生産性|アシスタント)\b"
@@ -229,8 +274,15 @@ def main():
         try: items.extend(fetch_feed(f))
         except Exception as ex: log('feed err', f, ex)
 
-    items.extend(fetch_x_api(x_users))
-    items.extend(fetch_x_rss(x_rss_base, x_rss_users))
+    if not SKIP_X:
+        x_items = []
+        x_items.extend(fetch_x_api(x_users))
+        x_items.extend(fetch_x_rss(x_rss_base, x_rss_users))
+        if not x_items:
+            x_items.extend(fetch_x_sheet(SNS_SHEET_URL))
+        items.extend(x_items)
+    else:
+        items.extend(fetch_x_sheet(SNS_SHEET_URL))
 
     uniq, seen = [], set()
     for it in items:
@@ -246,8 +298,18 @@ def main():
 
     verified = [it for it in pruned if head_ok(it['url'])]
 
-    enriched = []
+    cutoff = datetime.now(JST) - timedelta(hours=24)
+    recent = []
     for it in verified:
+        try:
+            dt = dateparser.parse(it['published']).astimezone(JST)
+        except Exception:
+            dt = datetime.now(JST)
+        if dt >= cutoff:
+            recent.append(it)
+
+    enriched = []
+    for it in recent:
         body = extract_text(it['url'])
         llm = llm_summarize(it['title'], body or it['summary'], it['url'])
         cats = classify(it)
