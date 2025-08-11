@@ -166,7 +166,8 @@ def extract_text(url: str) -> str:
     except Exception:
         return ''
 
-KEYWORDS_ENGINEER = r"\b(API|SDK|CLI|ライブラリ|GitHub|オープンソース|weights|モデル|fine-tune|benchmark|データセット|リリース|v\d(?:\.\d)?)\b"
+# broaden engineer keywords so more articles fall under the tools section
+KEYWORDS_ENGINEER = r"\b(API|SDK|CLI|ライブラリ|GitHub|オープンソース|weights|モデル|fine-tune|benchmark|データセット|リリース|ツール|tool|tools|framework|プラットフォーム|platform|update|アップデート|version|プレビュー|preview|plugin|extension|beta|v\d(?:\.\d)?)\b"
 KEYWORDS_BIZ = r"\b(Copilot|Notion|Slack|Google\s?Workspace|Microsoft\s?365|Salesforce|HubSpot|自動化|ワークフロー|生産性|アシスタント)\b"
 KEYWORDS_POLICY = r"\b(EU\s?AI\s?Act|規制|法案|大統領令|省令|罰金|当局|安全性評価|監査)\b"
 BIG_NAMES = ['OpenAI','Anthropic','Google','DeepMind','Microsoft','Meta','NVIDIA','Amazon','Apple','xAI','Mistral','Hugging Face']
@@ -281,8 +282,8 @@ def main():
         x_items = []
         x_items.extend(fetch_x_api(x_users))
         x_items.extend(fetch_x_rss(x_rss_base, x_rss_users))
-        if not x_items:
-            x_items.extend(fetch_x_sheet(SNS_SHEET_URL))
+        # always include sheet-driven posts so SNS section is populated even when API calls succeed
+        x_items.extend(fetch_x_sheet(SNS_SHEET_URL))
         items.extend(x_items)
     else:
         items.extend(fetch_x_sheet(SNS_SHEET_URL))
