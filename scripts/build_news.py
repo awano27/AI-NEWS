@@ -15,14 +15,15 @@ ROOT = os.path.dirname(os.path.dirname(__file__))
 NEWS_DIR = os.path.join(ROOT, 'news')
 SOURCES_YAML = os.path.join(ROOT, 'sources.yaml')
 
-# runtime toggles for faster builds
+# runtime toggles for faster builds and item limits
 FAST = os.getenv('FAST_MODE', '0') == '1'
 SKIP_X = os.getenv('SKIP_X', '0') == '1'
 MAX_FEED_ITEMS = int(os.getenv('MAX_FEED_ITEMS', '6'))
 HEAD_TIMEOUT = float(os.getenv('HEAD_TIMEOUT', '4'))
 GET_TIMEOUT  = float(os.getenv('GET_TIMEOUT',  '6'))
+SECTION_ITEMS = int(os.getenv('SECTION_ITEMS', '5'))
 SNS_SHEET_URL = os.getenv('SNS_SHEET_URL', 'https://docs.google.com/spreadsheets/d/1uuLKCLIJw--a1vCcO6UGxSpBiLTtN8uGl2cdMb6wcfg/export?format=csv&gid=0')
-MIN_PER_SECTION = int(os.getenv('MIN_PER_SECTION', '3'))
+MIN_PER_SECTION = int(os.getenv('MIN_PER_SECTION', str(SECTION_ITEMS)))
 
 def log(*a): print('[build]', *a, flush=True)
 
@@ -357,7 +358,7 @@ def main():
         return (-x['stars'], dt)
 
     for k in sections:
-        sections[k] = sorted(sections[k], key=sortkey)[:12]
+        sections[k] = sorted(sections[k], key=sortkey)[:SECTION_ITEMS]
 
     all_items = sorted(enriched, key=lambda x: (-x['stars']))
     hl = all_items[0] if all_items else None
