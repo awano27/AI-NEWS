@@ -1,6 +1,7 @@
 import os, re, json
 from datetime import datetime, timezone, timedelta
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
+from collections import Counter
 
 import requests
 import feedparser
@@ -13,6 +14,16 @@ JST = timezone(timedelta(hours=9))
 ROOT = os.path.dirname(os.path.dirname(__file__))
 NEWS_DIR = os.path.join(ROOT, 'news')
 SOURCES_YAML = os.path.join(ROOT, 'sources.yaml')
+
+# runtime toggles for faster builds and item limits
+FAST = os.getenv('FAST_MODE', '0') == '1'
+SKIP_X = os.getenv('SKIP_X', '0') == '1'
+MAX_FEED_ITEMS = int(os.getenv('MAX_FEED_ITEMS', '6'))
+HEAD_TIMEOUT = float(os.getenv('HEAD_TIMEOUT', '4'))
+GET_TIMEOUT  = float(os.getenv('GET_TIMEOUT',  '6'))
+SECTION_ITEMS = int(os.getenv('SECTION_ITEMS', '5'))
+SNS_SHEET_URL = os.getenv('SNS_SHEET_URL', 'https://docs.google.com/spreadsheets/d/1uuLKCLIJw--a1vCcO6UGxSpBiLTtN8uGl2cdMb6wcfg/export?format=csv&gid=0')
+MIN_PER_SECTION = int(os.getenv('MIN_PER_SECTION', str(SECTION_ITEMS)))
 
 def log(*a): print('[build]', *a, flush=True)
 
@@ -40,18 +51,23 @@ def load_sources():
 
 def head_ok(url: str) -> bool:
     try:
-        r = requests.head(url, headers=UA, timeout=8, allow_redirects=True)
+        r = requests.head(url, headers=UA, timeout=HEAD_TIMEOUT, allow_redirects=True)
         if r.status_code >= 400:
-            r = requests.get(url, headers=UA, timeout=10, allow_redirects=True)
+            r = requests.get(url, headers=UA, timeout=GET_TIMEOUT, allow_redirects=True)
         return 200 <= r.status_code < 400
     except Exception:
         return False
 
 def fetch_feed(url: str):
     log('feed:', url)
-    d = feedparser.parse(url)
+    try:
+        r = requests.get(url, headers=UA, timeout=GET_TIMEOUT)
+        d = feedparser.parse(r.content)
+    except Exception as ex:
+        log('feed err', url, ex)
+        return []
     items = []
-    for e in d.entries:
+    for e in d.entries[:MAX_FEED_ITEMS]:
         title = e.get('title', '').strip()
         link = e.get('link') or e.get('id')
         if not title or not link: continue
@@ -110,20 +126,62 @@ def fetch_x_rss(base, accounts):
         except Exception as ex: log('x rss error', name, ex)
     return out
 
+def fetch_x_sheet(sheet_url: str):
+    if not sheet_url:
+        return []
+    log('x sheet:', sheet_url)
+    try:
+        r = requests.get(sheet_url, headers=UA, timeout=10)
+        r.raise_for_status()
+        import csv, io
+        out = []
+        reader = csv.DictReader(io.StringIO(r.text))
+        for row in reader:
+            url = row.get('url') or row.get('URL') or row.get('リンク')
+            if not url:
+                continue
+            title = row.get('title') or row.get('text') or row.get('内容') or ''
+            summary = row.get('summary') or row.get('text') or row.get('内容') or ''
+            dt_str = row.get('published') or row.get('date') or row.get('日時') or ''
+            try:
+                dt = dateparser.parse(dt_str).astimezone(JST) if dt_str else datetime.now(JST)
+            except Exception:
+                dt = datetime.now(JST)
+            out.append({
+                'title': (title or summary)[:90],
+                'url': url,
+                'summary': summary,
+                'published': dt.isoformat(),
+                'source_name': row.get('source') or row.get('source_name') or 'x.com',
+                'category': 'sns',
+                'skip_head': True,
+            })
+        return out
+    except Exception as ex:
+        log('x sheet error', ex)
+        return []
+
 def extract_text(url: str) -> str:
+    if FAST:
+        return ''  # skip full-text extraction in fast mode
     try:
         downloaded = trafilatura.fetch_url(url)
-        if not downloaded: return ''
+        if not downloaded:
+            return ''
         txt = trafilatura.extract(downloaded, include_comments=False, include_images=False, include_tables=False) or ''
         return txt.strip()
-    except Exception: return ''
+    except Exception:
+        return ''
 
-KEYWORDS_ENGINEER = r"\b(API|SDK|CLI|ライブラリ|GitHub|オープンソース|weights|モデル|fine-tune|benchmark|データセット|リリース|v\d(?:\.\d)?)\b"
+# broaden engineer keywords so more articles fall under the tools section
+KEYWORDS_ENGINEER = r"\b(API|SDK|CLI|ライブラリ|GitHub|オープンソース|weights|モデル|fine-tune|benchmark|データセット|リリース|ツール|tool|tools|framework|プラットフォーム|platform|update|アップデート|version|プレビュー|preview|plugin|extension|beta|v\d(?:\.\d)?)\b"
 KEYWORDS_BIZ = r"\b(Copilot|Notion|Slack|Google\s?Workspace|Microsoft\s?365|Salesforce|HubSpot|自動化|ワークフロー|生産性|アシスタント)\b"
 KEYWORDS_POLICY = r"\b(EU\s?AI\s?Act|規制|法案|大統領令|省令|罰金|当局|安全性評価|監査)\b"
 BIG_NAMES = ['OpenAI','Anthropic','Google','DeepMind','Microsoft','Meta','NVIDIA','Amazon','Apple','xAI','Mistral','Hugging Face']
 
 def classify(item):
+    if item.get('category'):
+        return [item.get('category')]
     title = (item.get('title') or '')
     s = (item.get('summary') or '')
     text = f"{title} {s}"
@@ -229,8 +287,15 @@ def main():
         try: items.extend(fetch_feed(f))
         except Exception as ex: log('feed err', f, ex)
 
-    items.extend(fetch_x_api(x_users))
-    items.extend(fetch_x_rss(x_rss_base, x_rss_users))
+    if not SKIP_X:
+        x_items = []
+        x_items.extend(fetch_x_api(x_users))
+        x_items.extend(fetch_x_rss(x_rss_base, x_rss_users))
+        # always include sheet-driven posts so SNS section is populated even when API calls succeed
+        x_items.extend(fetch_x_sheet(SNS_SHEET_URL))
+        items.extend(x_items)
+    else:
+        items.extend(fetch_x_sheet(SNS_SHEET_URL))
 
     uniq, seen = [], set()
     for it in items:
@@ -244,19 +309,47 @@ def main():
         if any(very_similar(it['title'], p['title']) for p in pruned): continue
         pruned.append(it)
 
-    verified = [it for it in pruned if head_ok(it['url'])]
+    verified = [it for it in pruned if it.get('skip_head') or head_ok(it['url'])]
+
+    now = datetime.now(JST)
+    for it in verified:
+        try:
+            dt = dateparser.parse(it['published']).astimezone(JST)
+        except Exception:
+            dt = now
+        it['_dt'] = dt
+        it['_cat'] = classify(it)[0]
+
+    verified.sort(key=lambda x: x['_dt'], reverse=True)
+
+    cutoff = now - timedelta(hours=24)
+    recent = [it for it in verified if it['_dt'] >= cutoff]
+    older = [it for it in verified if it['_dt'] < cutoff]
+
+    selected = list(recent)
+    counts = Counter(it['_cat'] for it in selected)
+    for cat in ['business', 'tools', 'company', 'sns']:
+        need = MIN_PER_SECTION - counts.get(cat, 0)
+        if need > 0:
+            for it in older:
+                if it['_cat'] == cat and it not in selected:
+                    selected.append(it)
+                    need -= 1
+                    if need == 0:
+                        break
+            counts = Counter(it['_cat'] for it in selected)
 
     enriched = []
-    for it in verified:
+    for it in selected:
         body = extract_text(it['url'])
         llm = llm_summarize(it['title'], body or it['summary'], it['url'])
-        cats = classify(it)
+        category = (llm and llm.get('category')) or it['_cat']
         _, stars = score(it)
         enriched.append({
             'title': it['title'],
             'blurb': (llm and llm.get('blurb')) or (body[:120] + '…' if body else it['summary'][:120]),
-            'category': (llm and llm.get('category')) or cats[0],
-            'date': it['published'][:10],
+            'category': category,
+            'date': it['_dt'].isoformat()[:10],
             'stars': int((llm and llm.get('stars')) or stars),
             'source': {'name': it['source_name'], 'url': it['url']}
         })
@@ -267,7 +360,7 @@ def main():
 
     sections = {'business': [], 'tools': [], 'company': [], 'sns': []}
     for it in enriched:
-        sections.setdefault(it['category'], sections['company']).append(it)
+        sections.get(it['category'], sections['company']).append(it)
 
     def sortkey(x):
         try: dt = dateparser.parse(x['date'])
@@ -275,7 +368,7 @@ def main():
         return (-x['stars'], dt)
 
     for k in sections:
-        sections[k] = sorted(sections[k], key=sortkey)[:12]
+        sections[k] = sorted(sections[k], key=sortkey)[:SECTION_ITEMS]
 
     all_items = sorted(enriched, key=lambda x: (-x['stars']))
     hl = all_items[0] if all_items else None
