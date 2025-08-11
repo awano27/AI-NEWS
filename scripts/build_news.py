@@ -60,7 +60,12 @@ def head_ok(url: str) -> bool:
 
 def fetch_feed(url: str):
     log('feed:', url)
-    d = feedparser.parse(url)
+    try:
+        r = requests.get(url, headers=UA, timeout=GET_TIMEOUT)
+        d = feedparser.parse(r.content)
+    except Exception as ex:
+        log('feed err', url, ex)
+        return []
     items = []
     for e in d.entries[:MAX_FEED_ITEMS]:
         title = e.get('title', '').strip()
