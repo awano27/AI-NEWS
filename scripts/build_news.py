@@ -258,8 +258,18 @@ def main():
 
     verified = [it for it in pruned if head_ok(it['url'])]
 
-    enriched = []
+    cutoff = datetime.now(JST) - timedelta(hours=24)
+    recent = []
     for it in verified:
+        try:
+            dt = dateparser.parse(it['published']).astimezone(JST)
+        except Exception:
+            dt = datetime.now(JST)
+        if dt >= cutoff:
+            recent.append(it)
+
+    enriched = []
+    for it in recent:
         body = extract_text(it['url'])
         llm = llm_summarize(it['title'], body or it['summary'], it['url'])
         cats = classify(it)
