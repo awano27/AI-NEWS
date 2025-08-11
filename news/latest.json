@@ -1,277 +1,45 @@
 {
-  "generated_at": "2025-08-11T09:15:29.509691+09:00",
+  "generated_at": "2025-08-11T11:06:21.087671+09:00",
   "highlight": {
     "category": "重要トピック",
     "stars": 5,
-    "title": "Accelerating on-device ML on Meta’s family of apps with ExecuTorch",
-    "summary": "Metaが開発したエッジデバイス向けMLフレームワークExecuTorch。Metaのアプリ群で低遅延、プライバシー保護、オフライン機能を実現。ArmやAppleもサポート。",
+    "title": "Sex is getting scrubbed from the internet, but a billionaire can sell you AI nudes",
+    "summary": "ネット検閲が強化される一方、イーロン・マスクのxAIはディープフェイク画像を生成可能に。大手によるダブルスタンダードと同意なきAIポルノの危険性を指摘する。",
     "sources": [
       {
-        "name": "fb.com",
-        "url": "https://engineering.fb.com/2025/07/28/android/executorch-on-device-ml-meta-family-of-apps"
+        "name": "theverge.com",
+        "url": "https://www.theverge.com/internet-censorship/756831/grok-spicy-videos-nonconsensual-deepfakes-online-safety"
       }
     ]
   },
   "sections": {
-    "business": [
-      {
-        "title": "Using AI to make lower-carbon, faster-curing concrete",
-        "blurb": "Metaが、より強く速く硬化し、環境負荷も低いコンクリート配合を設計するオープンソースAIツールを開発。建設の高速化と低炭素化に貢献する。",
-        "category": "business",
-        "date": "2025-07-16",
-        "stars": 5,
-        "source": {
-          "name": "fb.com",
-          "url": "https://engineering.fb.com/2025/07/16/data-center-engineering/ai-make-lower-carbon-faster-curing-concrete"
-        }
-      },
-      {
-        "title": "Sex is getting scrubbed from the internet, but a billionaire can sell you AI nudes",
-        "blurb": "ネットでは性表現の検閲が強まる一方、イーロン・マスクのAIはディープフェイクヌードを生成可能。このダブルスタンダードとオンラインの安全性を指摘。",
-        "category": "business",
-        "date": "2025-08-10",
-        "stars": 5,
-        "source": {
-          "name": "theverge.com",
-          "url": "https://www.theverge.com/internet-censorship/756831/grok-spicy-videos-nonconsensual-deepfakes-online-safety"
-        }
-      },
-      {
-        "title": "Tesla’s Dojo supercomputer is DOA — now what?",
-        "blurb": "テスラは、AI開発用スパコン「Dojo」プロジェクトを中止。プロジェクトリーダーを含む多くの従業員が退職したためで、同社のAI開発にとって大きな後退となる。",
-        "category": "business",
-        "date": "2025-08-08",
-        "stars": 4,
-        "source": {
-          "name": "theverge.com",
-          "url": "https://www.theverge.com/tesla/756709/tesla-dojo-ai-talent-exodus-elon-musk"
-        }
-      },
-      {
-        "title": "Don’t let your competitor steal the brand spotlight — secure your exhibit table at TechCrunch Disrupt 2025",
-        "blurb": "TechCrunchが主催するスタートアップイベント「Disrupt 2025」の出展者を募集中。投資家やパートナーと出会い、事業を成長させる絶好の機会です。",
-        "category": "business",
-        "date": "2025-08-09",
-        "stars": 2,
-        "source": {
-          "name": "techcrunch.com",
-          "url": "https://techcrunch.com/2025/08/08/dont-let-your-competitor-steal-the-brand-spotlight-secure-your-exhibit-table-at-techcrunch-disrupt-2025"
-        }
-      }
-    ],
+    "business": [],
     "tools": [
       {
-        "title": "Accelerating on-device ML on Meta’s family of apps with ExecuTorch",
-        "blurb": "Metaが開発したエッジデバイス向けMLフレームワークExecuTorch。Metaのアプリ群で低遅延、プライバシー保護、オフライン機能を実現。ArmやAppleもサポート。",
-        "category": "tools",
-        "date": "2025-07-29",
-        "stars": 5,
-        "source": {
-          "name": "fb.com",
-          "url": "https://engineering.fb.com/2025/07/28/android/executorch-on-device-ml-meta-family-of-apps"
-        }
-      },
-      {
-        "title": "Welcome GPT OSS, the new open-source model family from OpenAI!",
-        "blurb": "OpenAIが新しいオープンソースモデルファミリー「GPT OSS」を公開。Hugging Face上で利用可能となり、AI開発のオープン化を促進する。",
-        "category": "tools",
-        "date": "2025-08-05",
-        "stars": 5,
-        "source": {
-          "name": "huggingface.co",
-          "url": "https://huggingface.co/blog/welcome-openai-gpt-oss"
-        }
-      },
-      {
-        "title": "Accelerate ND-Parallel: A Guide to Efficient Multi-GPU Training",
-        "blurb": "Hugging FaceのAccelerateライブラリに、効率的なマルチGPU学習を実現する新機能「ND-Parallel」が追加。N次元並列化で大規模モデルの学習を加速します。",
-        "category": "tools",
-        "date": "2025-08-08",
-        "stars": 5,
-        "source": {
-          "name": "huggingface.co",
-          "url": "https://huggingface.co/blog/accelerate-nd-parallel"
-        }
-      },
-      {
-        "title": "NASA and Google are building an AI medical assistant to keep Mars-bound astronauts healthy",
-        "blurb": "NASAとGoogleが、火星へ向かう宇宙飛行士の健康を維持するため、AI医療アシスタントを共同開発。音声や画像も扱うマルチモーダルツールだ。",
-        "category": "tools",
-        "date": "2025-08-09",
-        "stars": 5,
-        "source": {
-          "name": "techcrunch.com",
-          "url": "https://techcrunch.com/2025/08/08/nasa-and-google-are-building-an-ai-medical-assistant-to-keep-mars-bound-astronauts-healthy"
-        }
-      },
-      {
-        "title": "How Meta keeps its AI hardware reliable",
-        "blurb": "Meta社は、AIの精度に影響するハードウェア起因のデータ破損を検出し、AIシステムの信頼性を維持する手法を公開。",
-        "category": "tools",
-        "date": "2025-07-23",
-        "stars": 4,
-        "source": {
-          "name": "fb.com",
-          "url": "https://engineering.fb.com/2025/07/22/data-infrastructure/how-meta-keeps-its-ai-hardware-reliable"
-        }
-      },
-      {
-        "title": "Introducing Trackio: A Lightweight Experiment Tracking Library from Hugging Face",
-        "blurb": "Hugging Faceが、機械学習の実験を簡単に追跡できる軽量ライブラリ「Trackio」をリリース。シンプルなAPIで実験管理を効率化します。",
-        "category": "tools",
-        "date": "2025-07-29",
-        "stars": 4,
-        "source": {
-          "name": "huggingface.co",
-          "url": "https://huggingface.co/blog/trackio"
-        }
-      },
-      {
-        "title": "Build an AI Shopping Assistant with Gradio MCP Servers",
-        "blurb": "Gradioの新機能MCP Serversを使い、仮想試着など複数のAIモデルを連携させたAIショッピングアシスタントを構築する方法を解説。",
-        "category": "tools",
-        "date": "2025-07-31",
-        "stars": 4,
-        "source": {
-          "name": "huggingface.co",
-          "url": "https://huggingface.co/blog/gradio-vton-mcp"
-        }
-      },
-      {
-        "title": "Diff Risk Score: AI-driven risk-aware software development",
-        "blurb": "Metaが開発したAI「DRS」は、Llama LLMを活用し、コード変更が本番環境で問題を引き起こすリスクを予測。開発の安全性を高める。",
-        "category": "tools",
-        "date": "2025-08-07",
-        "stars": 4,
-        "source": {
-          "name": "fb.com",
-          "url": "https://engineering.fb.com/2025/08/06/developer-tools/diff-risk-score-drs-ai-risk-aware-software-development-meta"
-        }
-      },
-      {
-        "title": "Introducing AI Sheets: a tool to work with datasets using open AI models!",
-        "blurb": "Hugging Faceが、OpenAIモデルを使いスプレッドシート形式でデータセットを操作できる新ツール「AI Sheets」を発表。データの分類や抽出が容易に。",
-        "category": "tools",
-        "date": "2025-08-08",
-        "stars": 4,
-        "source": {
-          "name": "huggingface.co",
-          "url": "https://huggingface.co/blog/aisheets"
-        }
-      },
-      {
-        "title": "Former Googlers’ AI startup OpenArt now creates ‘brain rot’ videos in just one click",
-        "blurb": "元Google社員のAIスタートアップOpenArtが、クリエイター向けに「brain rot」動画をAIで生成する新機能を発表。",
-        "category": "tools",
-        "date": "2025-08-09",
-        "stars": 3,
-        "source": {
-          "name": "techcrunch.com",
-          "url": "https://techcrunch.com/2025/08/08/former-googlers-ai-startup-openart-now-creates-brainrot-videos-in-just-one-click"
-        }
-      },
-      {
         "title": "We found stuff AI is pretty good at",
-        "blurb": "AIツールの具体的な活用法は分かりにくい。The Vergeのポッドキャストでは、ChatGPTなどAIが実際に得意なことや便利な使い方を議論している。",
+        "blurb": "AIは万能と言われるが具体的な活用法は不明瞭。この記事では、ChatGPTなどのAIツールが実際に得意とする便利な使い方を紹介する。",
         "category": "tools",
         "date": "2025-08-11",
-        "stars": 3,
+        "stars": 4,
         "source": {
           "name": "theverge.com",
           "url": "https://www.theverge.com/podcast/756701/ai-tools-chatgpt-gemini-vergecast"
         }
       }
     ],
-    "company": [
+    "company": [],
+    "sns": [
       {
-        "title": "Policy Zones: How Meta enforces purpose limitation at scale in batch processing systems",
-        "blurb": "Metaは、大規模バッチ処理システムでデータの目的外利用を防ぐ「Policy Zones」を開発。SQL解析等でプライバシーポリシーを自動的に強制し、データ保護を強化する。",
-        "category": "company",
-        "date": "2025-07-24",
+        "title": "Sex is getting scrubbed from the internet, but a billionaire can sell you AI nudes",
+        "blurb": "ネット検閲が強化される一方、イーロン・マスクのxAIはディープフェイク画像を生成可能に。大手によるダブルスタンダードと同意なきAIポルノの危険性を指摘する。",
+        "category": "sns",
+        "date": "2025-08-10",
         "stars": 5,
         "source": {
-          "name": "fb.com",
-          "url": "https://engineering.fb.com/2025/07/23/security/policy-zones-meta-purpose-limitation-batch-processing-systems"
-        }
-      },
-      {
-        "title": "Building a human-computer interface for everyone",
-        "blurb": "Metaは、手首の筋電図で微細な手の動きを検出し、あらゆるデバイスを操作できる次世代インターフェースを研究開発。誰でも使える一般化が課題。",
-        "category": "company",
-        "date": "2025-08-04",
-        "stars": 4,
-        "source": {
-          "name": "fb.com",
-          "url": "https://engineering.fb.com/2025/08/04/virtual-reality/building-a-human-computer-interface-for-everyone-meta-tech-podcast"
-        }
-      },
-      {
-        "title": "ChatGPT is bringing back 4o as an option because people missed it",
-        "blurb": "OpenAIは、ユーザーからの強い要望を受け、ChatGPTでGPT-4oを復活。有料ユーザーは最新モデルへの更新後も、引き続き旧モデルを選択できるようになった。",
-        "category": "company",
-        "date": "2025-08-09",
-        "stars": 4,
-        "source": {
           "name": "theverge.com",
-          "url": "https://www.theverge.com/news/756980/openai-chatgpt-users-mourn-gpt-5-4o"
-        }
-      },
-      {
-        "title": "How Wikipedia is fighting AI slop content",
-        "blurb": "AIによる誤情報や偽引用を含む低品質な記事の急増に対し、Wikipediaのボランティアコミュニティが「免疫システム」のように機能し、迅速な削除などで対抗している。",
-        "category": "company",
-        "date": "2025-08-09",
-        "stars": 4,
-        "source": {
-          "name": "theverge.com",
-          "url": "https://www.theverge.com/report/756810/wikipedia-ai-slop-policies-community-speedy-deletion"
-        }
-      },
-      {
-        "title": "Sam Altman addresses ‘bumpy’ GPT-5 rollout, bringing 4o back, and the ‘chart crime’",
-        "blurb": "OpenAIのCEOサム・アルトマンがRedditで、波乱含みのGPT-5展開や旧モデル復活を求める声について語った。",
-        "category": "company",
-        "date": "2025-08-09",
-        "stars": 4,
-        "source": {
-          "name": "techcrunch.com",
-          "url": "https://techcrunch.com/2025/08/08/sam-altman-addresses-bumpy-gpt-5-rollout-bringing-4o-back-and-the-chart-crime"
-        }
-      },
-      {
-        "title": "Apple Intelligence’s ChatGPT integration will use GPT-5 starting with iOS 26",
-        "blurb": "Apple IntelligenceのChatGPT連携では、OpenAIの次期モデルGPT-5が利用可能になる。ただし、対応はiOS 26以降のOSからとなる見込み。",
-        "category": "company",
-        "date": "2025-08-09",
-        "stars": 3,
-        "source": {
-          "name": "theverge.com",
-          "url": "https://www.theverge.com/news/756799/apple-intelligence-openai-chatgpt-gpt-5-ios-26"
-        }
-      },
-      {
-        "title": "RIP, Microsoft Lens, a simple little app that’s getting replaced by AI",
-        "blurb": "マイクロソフトは9000万以上ダウンロードされたスキャンアプリ「Lens」を終了し、AI機能に置き換えます。",
-        "category": "company",
-        "date": "2025-08-09",
-        "stars": 3,
-        "source": {
-          "name": "techcrunch.com",
-          "url": "https://techcrunch.com/2025/08/08/rip-microsoft-lens-a-simple-little-app-thats-getting-replaced-by-ai"
-        }
-      },
-      {
-        "title": "Pinterest CEO says agentic shopping is still a long way out",
-        "blurb": "PinterestのCEOは、AIが自動で買い物をする「エージェント型ショッピング」の実現はまだ先だと述べ、AI時代における同社の役割について語った。",
-        "category": "company",
-        "date": "2025-08-09",
-        "stars": 3,
-        "source": {
-          "name": "techcrunch.com",
-          "url": "https://techcrunch.com/2025/08/08/pinterest-ceo-says-agentic-shopping-is-still-a-long-way-out"
+          "url": "https://www.theverge.com/internet-censorship/756831/grok-spicy-videos-nonconsensual-deepfakes-online-safety"
         }
       }
-    ],
-    "sns": []
+    ]
   }
 }
