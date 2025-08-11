@@ -288,14 +288,10 @@ def main():
         except Exception as ex: log('feed err', f, ex)
 
     if not SKIP_X:
-        x_items = []
-        x_items.extend(fetch_x_api(x_users))
-        x_items.extend(fetch_x_rss(x_rss_base, x_rss_users))
-        # always include sheet-driven posts so SNS section is populated even when API calls succeed
-        x_items.extend(fetch_x_sheet(SNS_SHEET_URL))
-        items.extend(x_items)
-    else:
-        items.extend(fetch_x_sheet(SNS_SHEET_URL))
+        items.extend(fetch_x_api(x_users))
+        items.extend(fetch_x_rss(x_rss_base, x_rss_users))
+    # always include sheet-driven posts so SNS section is populated even when API calls succeed
+    items.extend(fetch_x_sheet(SNS_SHEET_URL))
 
     uniq, seen = [], set()
     for it in items:
