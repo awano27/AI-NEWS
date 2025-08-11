@@ -1,10 +1,10 @@
 {
-  "generated_at": "2025-08-11T12:53:54.977473+09:00",
+  "generated_at": "2025-08-11T14:19:30.285214+09:00",
   "highlight": {
     "category": "重要トピック",
     "stars": 5,
     "title": "Sex is getting scrubbed from the internet, but a billionaire can sell you AI nudes",
-    "summary": "ネットで性表現の検閲が強まる一方、イーロン・マスクのAIはディープフェイク画像を生成可能に。この矛盾と、同意なきポルノ生成のリスクが問題視されている。",
+    "summary": "ネット上の性表現への検閲が強まる一方、イーロン・マスクのAIは同意なきディープフェイク画像を生成。この矛盾と危険性を指摘する記事。",
     "sources": [
       {
         "name": "theverge.com",
@@ -13,25 +13,26 @@
     ]
   },
   "sections": {
-    "business": [],
-    "tools": [
+    "business": [
       {
         "title": "Sex is getting scrubbed from the internet, but a billionaire can sell you AI nudes",
-        "blurb": "ネットで性表現の検閲が強まる一方、イーロン・マスクのAIはディープフェイク画像を生成可能に。この矛盾と、同意なきポルノ生成のリスクが問題視されている。",
-        "category": "tools",
+        "blurb": "ネット上の性表現への検閲が強まる一方、イーロン・マスクのAIは同意なきディープフェイク画像を生成。この矛盾と危険性を指摘する記事。",
+        "category": "business",
         "date": "2025-08-10",
         "stars": 5,
         "source": {
           "name": "theverge.com",
           "url": "https://www.theverge.com/internet-censorship/756831/grok-spicy-videos-nonconsensual-deepfakes-online-safety"
         }
-      },
+      }
+    ],
+    "tools": [
       {
         "title": "We found stuff AI is pretty good at",
-        "blurb": "テック企業はAIの可能性を強調するが、具体的な活用例は乏しい。この記事では、ChatGPTやGeminiなど、AIが実際に得意とするタスクや便利な使い方を議論する。",
+        "blurb": "AIは万能と言われるが、具体的な使い道は分かりにくい。この記事では、ChatGPTやGeminiなど、実際のAIツールが得意とする具体的なタスクや活用法を紹介している。",
         "category": "tools",
         "date": "2025-08-11",
-        "stars": 3,
+        "stars": 4,
         "source": {
           "name": "theverge.com",
           "url": "https://www.theverge.com/podcast/756701/ai-tools-chatgpt-gemini-vergecast"
