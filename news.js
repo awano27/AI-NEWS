@@ -29,7 +29,9 @@
   const renderCard = it => {
     const src = it.source || {};
     const date = it.date ? `<span>${esc(it.date)}</span>` : '';
-    const link = src.url ? `<a class="source-link" href="${esc(src.url)}" target="_blank" rel="noopener noreferrer">${src.name? '出典':'リンク'}</a>` : '';
+    const link = src.url
+      ? `<a class="source-link" href="${esc(src.url)}" target="_blank" rel="noopener noreferrer">出典: ${esc(src.name||'link')}</a>`
+      : '';
     return `
       <article class="card">
         <span class="category">${esc(it.category||'')}</span>
