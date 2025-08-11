@@ -3,128 +3,60 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Daily AI News — 2025-08-10 16:00 JST</title>
+  <title>Daily AI News</title>
   <link rel="stylesheet" href="style.css" />
-  <meta name="description" content="本日のAIニュースまとめ（2025-08-10 16:00 JST 時点）。信頼できる一次情報リンク付き。"/>
 </head>
 <body>
   <div class="container">
-    <header class="header">
-      <h1>Daily AI News</h1>
-      <span class="updated">最終更新：2025-08-10 16:00 JST</span>
+    <header>
+      <h1 class="title">Daily AI News</h1>
+      <span class="updated">最終更新：読み込み中…</span>
     </header>
 
-    <noscript>
-      <p class="noscript">※JavaScriptが無効です。すべてのカテゴリを下に縦並びで表示します。</p>
-    </noscript>
+    <div class="highlight-section"></div>
 
     <div class="tabs" role="tablist" aria-label="AIニュースカテゴリ">
-      <button class="tab-btn active" data-tab="Business" role="tab" aria-selected="true" aria-controls="panel-Business">Business</button>
-      <button class="tab-btn" data-tab="Tools" role="tab" aria-selected="false" aria-controls="panel-Tools">Tools</button>
-      <button class="tab-btn" data-tab="Company" role="tab" aria-selected="false" aria-controls="panel-Company">Company</button>
-      <button class="tab-btn" data-tab="SNS" role="tab" aria-selected="false" aria-controls="panel-SNS">SNS</button>
+      <button class="tab active" data-tab="business" role="tab" aria-selected="true">Business</button>
+      <button class="tab" data-tab="tools" role="tab" aria-selected="false">Tools</button>
+      <button class="tab" data-tab="company" role="tab" aria-selected="false">Company</button>
+      <button class="tab" data-tab="sns" role="tab" aria-selected="false">SNS</button>
     </div>
 
-    <section id="panel-Business" class="panel" role="tabpanel" aria-labelledby="Business" style="display:block;">
-      <div class="grid">
-        <article class="card">
-          <h3>AIで初級ソフトウェア職が激減、コーディング・ブートキャンプが苦境に</h3>
-          <p>新卒採用は2019年比で50%減（Signalfire）。Codesmithの就職率は2021年後半83%→2023年37%に低下。AnthropicのDario Amodei氏は“1〜5年で初級ホワイトカラーの半数が消える可能性”と指摘。</p>
-          <div class="meta"><span class="badge">Business</span><span class="small badge-jst">2025-08-09 19:00 JST</span></div>
-          <div class="actions"><a class="source-btn" href="https://www.reuters.com/lifestyle/bootcamp-bust-how-ai-is-upending-software-development-industry-2025-08-09/" target="_blank" rel="noopener noreferrer">出典を開く</a></div>
-        </article>
-      </div>
+    <section id="business" class="panel" role="tabpanel" style="display:block;">
+      <div class="card-list"></div>
     </section>
 
-    <section id="panel-Tools" class="panel" role="tabpanel" aria-labelledby="Tools" style="display:none;">
-      <div class="grid">
-        <article class="card">
-          <h3>GPT-5が“無料プランでも利用可”に（利用上限あり）</h3>
-          <p>ChatGPT FreeでもGPT-5にアクセス可能に。Plus/Pro/Teamは上限拡大、Enterprise/Educationは1週間以内に展開予定。新機能：プリセット“人格”、Gmail/Googleカレンダー連携（まずPro向け）。</p>
-          <div class="meta"><span class="badge">Tools</span><span class="small badge-jst">2025-08-10 14:12 JST</span></div>
-          <div class="actions"><a class="source-btn" href="https://indianexpress.com/article/technology/artificial-intelligence/openai-gpt-5-free-for-everyone-how-to-access-it-10180638/" target="_blank" rel="noopener noreferrer">出典を開く</a></div>
-        </article>
-      </div>
+    <section id="tools" class="panel" role="tabpanel" style="display:none;">
+      <div class="card-list"></div>
     </section>
 
-    <section id="panel-Company" class="panel" role="tabpanel" aria-labelledby="Company" style="display:none;">
-      <div class="grid">
-        <article class="card">
-          <h3>中国、AI向けチップ輸出規制の緩和を米国に要求（FT報道）</h3>
-          <p>Financial Timesの報道をReutersが伝達。中国はトランプ・習会談の前提となる通商合意の一部として、AI向け半導体（HBM等）に対する米国の輸出規制の緩和を求めている。</p>
-          <div class="meta"><span class="badge">Company</span><span class="small badge-jst">2025-08-10 13:54 JST</span></div>
-          <div class="actions"><a class="source-btn" href="https://www.reuters.com/world/china/china-wants-us-relax-ai-chip-export-controls-trade-deal-ft-reports-2025-08-10/" target="_blank" rel="noopener noreferrer">出典を開く</a></div>
-        </article>
-        <article class="card">
-          <h3>中国国営系アカウント「NVIDIA H20は中国にとって安全でない」</h3>
-          <p>CCTV系の『玉淵譚天』がWeChatで主張。NVIDIAの中国向けH20に“バックドア”懸念があるとし、安全性・先進性・環境面のいずれも不十分と批判。</p>
-          <div class="meta"><span class="badge">Company</span><span class="small badge-jst">2025-08-10 15:09 JST</span></div>
-          <div class="actions"><a class="source-btn" href="https://www.reuters.com/world/china/chinese-state-media-says-nvidia-h20-chips-not-safe-china-2025-08-10/" target="_blank" rel="noopener noreferrer">出典を開く</a></div>
-        </article>
-      </div>
+    <section id="company" class="panel" role="tabpanel" style="display:none;">
+      <div class="card-list"></div>
     </section>
 
-    <section id="panel-SNS" class="panel" role="tabpanel" aria-labelledby="SNS" style="display:none;">
-      <div class="grid">
-        <article class="card">
-          <h3>@OpenAI</h3>
-          <p>GPT-5の週末前アップデート（Plusで4o継続選択、設定で“legacy models”表示の有効化 ほか）。</p>
-          <div class="meta"><span class="badge">SNS</span><span class="small badge-jst">2025-08-09</span></div>
-          <div class="actions"><a class="source-btn" href="https://x.com/OpenAI/status/1954068588014580072" target="_blank" rel="noopener noreferrer">ポストを見る</a></div>
-        </article>
-        <article class="card">
-          <h3>@sama</h3>
-          <p>GPT-5ロールアウト更新：Plusユーザーは4o継続選択可、レガシーモデル提供期間は利用状況をみて判断 ほか。</p>
-          <div class="meta"><span class="badge">SNS</span><span class="small badge-jst">2025-08-09</span></div>
-          <div class="actions"><a class="source-btn" href="https://x.com/sama/status/1953893841381273969" target="_blank" rel="noopener noreferrer">ポストを見る</a></div>
-        </article>
-        <article class="card">
-          <h3>@GaryMarcus</h3>
-          <p>GPT-5の出来に対する辛口評価。今回の反応が業界の転換点になるとの見立て。</p>
-          <div class="meta"><span class="badge">SNS</span><span class="small badge-jst">2025-08-10</span></div>
-          <div class="actions"><a class="source-btn" href="https://x.com/GaryMarcus/status/1954320413015900516" target="_blank" rel="noopener noreferrer">ポストを見る</a></div>
-        </article>
-        <article class="card">
-          <h3>@kimmonismus</h3>
-          <p>『GPT-5の問題の核心は、モデル切替を知らず（または課金せず）に使うと体験が落ちる点』という指摘。</p>
-          <div class="meta"><span class="badge">SNS</span><span class="small badge-jst">2025-08-09</span></div>
-          <div class="actions"><a class="source-btn" href="https://x.com/kimmonismus/status/1954234801827066037" target="_blank" rel="noopener noreferrer">ポストを見る</a></div>
-        </article>
-        <article class="card">
-          <h3>@rohunvora</h3>
-          <p>hot take: gpt-5 is good</p>
-          <div class="meta"><span class="badge">SNS</span><span class="small badge-jst">2025-08-09</span></div>
-          <div class="actions"><a class="source-btn" href="https://x.com/rohunvora/status/1954160458769768842" target="_blank" rel="noopener noreferrer">ポストを見る</a></div>
-        </article>
-        <article class="card">
-          <h3>Jonathan Mannhart</h3>
-          <p>『これはGPT-5 Thinking！』という挙動デモ投稿。</p>
-          <div class="meta"><span class="badge">SNS</span><span class="small badge-jst">2025-08-09</span></div>
-          <div class="actions"><a class="source-btn" href="https://x.com/JMannhart/status/1954238095445868798" target="_blank" rel="noopener noreferrer">ポストを見る</a></div>
-        </article>
-      </div>
+    <section id="sns" class="panel" role="tabpanel" style="display:none;">
+      <div class="card-list"></div>
     </section>
 
-    <hr class="sep" />
-    <footer>
-      <p>方針：一次情報のURLに直接リンクし、24時間以内（JST）の主要トピックを厳選して掲載しています。リンクが開けない／404の場合はお知らせください。</p>
-      <p class="small">Copyright © 2025 Daily AI News</p>
-    </footer>
+      <footer>
+        <p class="updated-footer">最終更新：読み込み中…</p>
+        <p>方針：一次情報のURLに直接リンクし、24時間以内（JST）の主要トピックを厳選して掲載しています。</p>
+        <p class="small">Copyright © 2025 Daily AI News</p>
+      </footer>
   </div>
 
+  <script src="news.js"></script>
   <script>
-  // タブ切替（シンプル）
-  const tabs = document.querySelectorAll('.tab-btn');
-  const panels = document.querySelectorAll('.panel');
-  tabs.forEach(btn => btn.addEventListener('click', () => {
-    tabs.forEach(b => b.classList.remove('active'));
-    panels.forEach(p => p.style.display = 'none');
-    btn.classList.add('active');
-    const id = 'panel-' + btn.dataset.tab;
-    document.getElementById(id).style.display = 'block';
-    // ARIA
-    tabs.forEach(b => b.setAttribute('aria-selected', b === btn ? 'true' : 'false'));
-  }));
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+    tabs.forEach(btn => btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.style.display = 'none');
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).style.display = 'block';
+      tabs.forEach(b => b.setAttribute('aria-selected', b === btn ? 'true' : 'false'));
+    }));
   </script>
 </body>
 </html>
+
