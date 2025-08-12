@@ -293,7 +293,10 @@ def main():
         if any(very_similar(it['title'], p['title']) for p in pruned): continue
         pruned.append(it)
 
-    verified = [it for it in pruned if head_ok(it['url'])]
+    if FAST:
+        verified = pruned
+    else:
+        verified = [it for it in pruned if head_ok(it['url'])]
 
     cutoff = datetime.now(JST) - timedelta(hours=24)
     recent = []
